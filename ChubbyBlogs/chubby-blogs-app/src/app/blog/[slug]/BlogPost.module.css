@@ -1,0 +1,167 @@
+/* ── Main wrapper: subtle yellow side ambiance ──────── */
+.main {
+  min-height: 100vh;
+  padding-top: 80px;
+  padding-bottom: 80px;
+  position: relative;
+  /* Subtle yellow glow bleeding in from both edges — fades to nothing before the text */
+  background:
+    linear-gradient(to right,
+      rgba(245, 197, 24, 0.055) 0%,
+      rgba(245, 197, 24, 0.018) 12%,
+      transparent 28%,
+      transparent 72%,
+      rgba(245, 197, 24, 0.018) 88%,
+      rgba(245, 197, 24, 0.055) 100%
+    );
+}
+
+/* ── Vertical accent lines flanking the content column ── */
+.main::before,
+.main::after {
+  content: '';
+  position: fixed;
+  top: 80px;   /* below navbar */
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(245, 197, 24, 0.18) 8%,
+    rgba(245, 197, 24, 0.12) 50%,
+    rgba(245, 197, 24, 0.18) 92%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.main::before {
+  left: clamp(20px, calc(50% - 400px), 200px);
+}
+
+.main::after {
+  right: clamp(20px, calc(50% - 400px), 200px);
+}
+
+/* ── Back link wrapper ──────────────────────────────── */
+.backWrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 var(--margin-mobile);
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .backWrapper {
+    padding: 0;
+  }
+}
+
+.backLink {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.2s ease;
+}
+
+.backLink:hover {
+  opacity: 0.7;
+}
+
+/* ── Article ─────────────────────────────────────────── */
+.article {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 var(--margin-mobile);
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .article {
+    padding: 0;
+  }
+}
+
+/* ── Header ─────────────────────────────────────────── */
+.header {
+  margin-bottom: 48px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 400;   /* Anton has only 400 */
+  font-size: clamp(36px, 5vw, 60px);
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  color: var(--color-accent);
+  margin-bottom: 16px;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.dot {
+  color: #4e4633;
+}
+
+/* ── Cover image ─────────────────────────────────────── */
+.figure {
+  margin-bottom: 64px;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.figcaption {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-muted);
+  text-align: center;
+  font-style: italic;
+  margin-top: 12px;
+  opacity: 0.6;
+}
+
+/* ── Prose section ───────────────────────────────────── */
+.proseSection {
+  margin-bottom: 48px;
+}
+
+.hr {
+  border: none;
+  border-top: 1px solid var(--color-stroke);
+  margin: 0 0 48px 0;
+}
+
+/* ── Hide pseudo-lines on mobile (too narrow) ────────── */
+@media (max-width: 900px) {
+  .main::before,
+  .main::after {
+    display: none;
+  }
+}

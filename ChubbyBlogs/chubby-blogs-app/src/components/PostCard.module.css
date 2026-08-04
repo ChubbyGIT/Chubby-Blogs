@@ -1,0 +1,105 @@
+.cardLink {
+  display: block;
+  text-decoration: none;
+}
+
+.card {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    border-color 0.25s ease,
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover {
+  border-color: var(--color-accent);
+  transform: scale(1.03);
+}
+
+.imageWrapper {
+  position: absolute;
+  inset: 0;
+}
+
+.image {
+  object-fit: cover;
+  filter: grayscale(0.3);
+  transform: scale(1.08);
+  transition:
+    filter 0.7s ease,
+    transform 0.7s ease;
+}
+
+.card:hover .image {
+  filter: grayscale(0);
+  transform: scale(1.04);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    #0a0a0a 0%,
+    rgba(10, 10, 10, 0.8) 30%,
+    transparent 100%
+  );
+  z-index: 1;
+}
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-surface-low);
+}
+
+.content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 32px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.category {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.card:hover .title {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 599px) {
+  .content {
+    padding: 24px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+}

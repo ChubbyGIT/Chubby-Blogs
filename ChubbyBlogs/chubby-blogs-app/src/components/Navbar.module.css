@@ -1,0 +1,109 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-stroke);
+  width: 100%;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 20px;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.wordmark:hover {
+  opacity: 0.85;
+}
+
+.desktopNav {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.navLink {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.navLink:hover {
+  color: var(--color-accent);
+}
+
+.rssLink {
+  color: var(--color-accent);
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.hamburgerLine {
+  width: 22px;
+  height: 2px;
+  background-color: var(--color-accent);
+  display: block;
+}
+
+.mobileMenu {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--color-stroke);
+  background-color: var(--color-surface);
+  padding: 20px var(--margin-mobile);
+  gap: 20px;
+}
+
+.mobileLink {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.mobileLink:hover {
+  color: var(--color-accent);
+}
+
+/* Responsive: show hamburger on mobile, hide desktop nav */
+@media (max-width: 767px) {
+  .desktopNav {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}

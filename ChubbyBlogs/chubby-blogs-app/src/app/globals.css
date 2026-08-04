@@ -1,0 +1,249 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --color-bg: #0A0A0A;
+  --color-accent: #F5C518;
+  --color-accent-dim: #f0c110;
+  --color-text: #F2F2F2;
+  --color-muted: #8C8C8C;
+  --color-stroke: #262626;
+  --color-surface: #131313;
+  --color-surface-low: #1b1c1c;
+  --color-surface-high: #2a2a2a;
+  --color-on-surface-variant: #d1c5ac;
+
+  /* Anton for all headings/display, Times New Roman for body */
+  --font-display: 'Anton', 'Impact', system-ui, sans-serif;
+  --font-body: 'Times New Roman', 'Times', Georgia, serif;
+  --font-ui: 'Inter', system-ui, sans-serif;   /* labels, nav, meta */
+
+  --max-width: 1200px;
+  --reading-width: 720px;
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 32px;
+  --spacing-lg: 80px;
+  --gutter: 24px;
+  --margin-desktop: 64px;
+  --margin-mobile: 20px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: #000;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-stroke);
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Container utility */
+.container {
+  max-width: var(--max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--margin-mobile);
+  padding-right: var(--margin-mobile);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: var(--margin-desktop);
+    padding-right: var(--margin-desktop);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────
+   PROSE — long-form reading styles (blog post body)
+───────────────────────────────────────────────────────── */
+.prose {
+  font-family: var(--font-body);
+  font-size: 19px;
+  line-height: 1.85;
+  color: var(--color-text);
+}
+
+.prose p {
+  margin-bottom: 1.75rem;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: var(--font-display);
+  color: var(--color-accent);
+  font-weight: 400;          /* Anton is already heavy — 400 is its only weight */
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
+
+.prose h1 { font-size: 2rem; }
+
+.prose h2 {
+  font-size: 1.6rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-stroke);
+}
+
+.prose h3 {
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.prose blockquote {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 1.5rem;
+  font-style: italic;
+  margin: 2.5rem 0;
+  color: var(--color-on-surface-variant);
+  font-size: 1.1em;
+  line-height: 1.75;
+}
+
+.prose code {
+  font-family: 'Courier New', monospace;
+  background: var(--color-surface-high);
+  padding: 2px 6px;
+  font-size: 0.9em;
+  color: var(--color-accent);
+}
+
+.prose pre {
+  background: var(--color-surface-low);
+  border: 1px solid var(--color-stroke);
+  padding: 1.5rem;
+  overflow-x: auto;
+  margin: 2rem 0;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+  color: var(--color-text);
+}
+
+.prose ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.75rem;
+}
+
+.prose ul li {
+  padding-left: 1.5rem;
+  position: relative;
+  margin-bottom: 0.6rem;
+  line-height: 1.7;
+}
+
+.prose ul li::before {
+  content: '▪';
+  color: var(--color-accent);
+  position: absolute;
+  left: 0;
+  font-size: 0.7em;
+  top: 0.3em;
+}
+
+.prose ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.prose ol li {
+  margin-bottom: 0.5rem;
+}
+
+.prose img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-stroke);
+  margin: 2rem 0;
+}
+
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--color-stroke);
+  margin: 2.5rem 0;
+}
+
+.prose strong {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.prose em {
+  color: var(--color-on-surface-variant);
+  font-style: italic;
+}
+
+.prose a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose a:hover {
+  opacity: 0.8;
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 767px) {
+  button[aria-label="Toggle menu"] {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 768px) {
+  button[aria-label="Toggle menu"] {
+    display: none !important;
+  }
+}
