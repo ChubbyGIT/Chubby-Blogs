@@ -66,10 +66,16 @@ export default function HomePage() {
             <div className={styles.aboutText}>
               <p className={styles.aboutLabel}>The Author</p>
               <p className={styles.aboutBody}>
-                I&apos;m{' '}
-                <span className={styles.highlight}>Abhigyan</span>{' '}
-                — a product manager working on enterprise low-code platforms, with a running interest in how AI is reshaping the build cycle. I also make music as{' '}
-                <span className={styles.highlight}>ChubbyRiffs</span>. This is where I write about both.
+                I&apos;m <span className={styles.highlight}>Abhigyan</span>. I work in product, build things with AI, and spend an unreasonable amount of time thinking about how technology changes the way we create.
+              </p>
+              <p className={styles.aboutBody}>
+                My day job has me working on enterprise software and low code platforms. Outside of that, I like taking ideas apart, figuring out how they work, and building my own versions of them. I&apos;m particularly interested in AI, product development, developer tools, and the strange space where software starts becoming capable of building software itself.
+              </p>
+              <p className={styles.aboutBody}>
+                I also make music as <span className={styles.highlight}>ChubbyRiffs</span>. Guitar, production, songwriting, and a healthy obsession with heavy music have been a big part of my life for years.
+              </p>
+              <p className={styles.aboutBody}>
+                <span className={styles.highlight}>Chubby Blogs</span> is where all of that ends up. I write about things I&apos;m learning, things I&apos;m building, ideas I find interesting, and occasionally things I probably spent far too much time thinking about.
               </p>
             </div>
 
