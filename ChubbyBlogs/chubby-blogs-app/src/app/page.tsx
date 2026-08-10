@@ -78,12 +78,6 @@ export default function HomePage() {
                 <span className={styles.highlight}>Chubby Blogs</span> is where all of that ends up. I write about things I&apos;m learning, things I&apos;m building, ideas I find interesting, and occasionally things I probably spent far too much time thinking about.
               </p>
             </div>
-
-            <div className={styles.aboutCta}>
-              <a href="/#about" className={styles.ctaButton}>
-                About the Author
-              </a>
-            </div>
           </div>
         </section>
 
