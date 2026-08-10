@@ -74,9 +74,32 @@ export default function HomePage() {
             </div>
 
             <div className={styles.aboutCta}>
-              <a href="mailto:hello@chubbyblogs.com" className={styles.ctaButton}>
-                Learn More
+              <a href="/#about" className={styles.ctaButton}>
+                About the Author
               </a>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Divider ─────────────────────────────────────── */}
+        <div className="container">
+          <hr className={styles.divider} />
+        </div>
+
+        {/* ── Contact ──────────────────────────────────────── */}
+        <section id="contact" className={`${styles.aboutSection} container`}>
+          <div className={styles.aboutGrid}>
+            <div className={styles.aboutText}>
+              <p className={styles.aboutLabel}>Get in Touch</p>
+              <p className={styles.aboutBody}>
+                <span className={styles.highlight}>Abhigyan Das</span>
+              </p>
+              <p className={styles.aboutBody} style={{ marginTop: '0.5rem' }}>
+                📧 <a href="mailto:abhigyansdas1234@gmail.com" style={{ color: 'inherit' }}>abhigyansdas1234@gmail.com</a>
+              </p>
+              <p className={styles.aboutBody}>
+                📞 <a href="tel:9880987891" style={{ color: 'inherit' }}>9880987891</a>
+              </p>
             </div>
           </div>
         </section>

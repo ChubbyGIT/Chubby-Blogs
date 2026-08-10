@@ -1,158 +1,126 @@
 ---
 title: "Loop Engineering: The Concept Quietly Redefining How Products Get Built"
 slug: "loop-engineering"
-date: "Oct 24, 2024"
+date: "Jul 24, 2026"
 coverImage: "/images/loop-engineering-cover.gif"
-excerpt: "It started as an off-hand remark by Boris Cherny, the lead behind Claude Code at Anthropic, and has since crystallized into the next foundational shift in how software gets built."
+excerpt: "It started as an offhand remark from Boris Cherny, who leads Claude Code at Anthropic, and it's since turned into something that looks less like a trend and more like the next real shift in how software gets built."
 category: "Build Log"
 readTime: "8 min read"
 ---
 
-If you've been paying attention to the AI community over the past month, you've probably heard the term "Loop Engineering" floating around. It started as an off-hand remark by Boris Cherny, the lead behind Claude Code at Anthropic, and has since crystallized into something that looks less like a trend and more like the next foundational shift in how software gets built.
+If you've spent any time in AI circles over the past month, you've probably run into the phrase "Loop Engineering." It started as an offhand remark from Boris Cherny, who leads Claude Code at Anthropic, and it's since turned into something that looks less like a trend and more like the next real shift in how software gets built.
 
-Here's the quote that started it all:
+Here's the quote that kicked it off:
 
 > "I don't prompt Claude anymore. I have loops running that prompt Claude. My job is to write loops."
 
-Read that twice. Because it's not about AI getting smarter. It's about how we fundamentally changed what we ask the AI to do.
+Read that twice. This isn't about AI getting smarter. It's about what we're actually asking the AI to do.
 
-## The Ladder We Climbed
+## The ladder we climbed
 
-To understand Loop Engineering, we need to see where it sits in the evolution of working with AI systems.
+To understand Loop Engineering, it helps to see where it sits in the evolution of working with these systems.
 
-**Prompt Engineering (2022–2024)** was about finding the magic words. You'd craft the perfect phrasing, use the right tone, maybe throw in a few examples, and hope the model gave you a good answer. It was almost literary — people were sharing prompt templates like recipes. The frontier was making one prompt better.
+Prompt Engineering, roughly 2022 to 2024, was about finding the magic words. Craft the perfect phrasing, use the right tone, throw in a few examples, hope for a good answer. It was almost literary. People shared prompt templates like recipes, and the whole frontier was making one prompt better.
 
-**Context Engineering** came next. It turns out, what the model *sees* matters as much as what you ask it. So teams started being obsessive about what went into the context window: relevant documentation, examples, constraints, structured data. You weren't just asking better questions; you were building a better environment for the model to think in.
+Context Engineering came next, once it became clear that what the model sees matters as much as what you ask it. Teams got obsessive about what went into the context window: documentation, examples, constraints, structured data. You weren't just asking better questions anymore. You were building a better environment for the model to think in.
 
-**Harness Engineering** took it further — creating a single controlled run where the model operates within guardrails. Think of it as a sandbox with rules. The model can write code, but only in this directory. It can call APIs, but only these three. It gets feedback from tests, but only runs them twice before giving up. A harness made a single attempt more reliable.
+Harness Engineering pushed further still, creating a single controlled run where the model operates inside guardrails. Think of it as a sandbox with rules. The model can write code, but only in this directory. It can call APIs, but only these three. It gets feedback from tests, but only two tries before it gives up. A harness made one attempt more reliable.
 
-**Loop Engineering** is the leap after that. It's saying: why do we think one attempt is enough?
+Loop Engineering is the leap after that. It asks: why do we assume one attempt is enough?
 
-Instead of hoping a single prompt — even a perfectly crafted one — produces a perfect answer, you design a system that will keep trying: iterating, checking its own work, and deciding when to stop, with minimal human intervention.
+Instead of hoping a single, even perfectly crafted, prompt produces the right answer, you design a system that keeps trying. Iterating, checking its own work, deciding when to stop, with as little human hand-holding as possible.
 
-## What Loop Engineering Actually Is
+## What a loop actually is
 
-Let's ground this in something concrete. A loop, in practice, has four components that appear consistently across every implementation:
+Ground this in something concrete. Every implementation, across every team doing this seriously, seems to converge on the same four parts.
 
-**The Trigger** — This is what starts the whole cycle. It could be a GitHub webhook (a new PR arrives), a scheduled cron job (run this migration every night), a failing test in CI/CD, or even a Slack message mentioning a bot. The trigger says: "Now is the time to try."
+The Trigger starts the cycle. It might be a GitHub webhook when a new PR lands, a scheduled cron job that runs a migration overnight, a failing test in CI/CD, or a Slack message that mentions a bot. The trigger's whole job is to say: now.
 
-**The Generator** — This is the agent actually doing the work. It's usually an LLM (in most Anthropic discussions, Claude) receiving a goal and context, and then generating output. Write a migration script. Fix this test. Refactor this function. The generator runs cheaply and fast — which is crucial to the whole model.
+The Generator is the agent doing the actual work, usually an LLM (Claude, in most of Anthropic's own writing about this) given a goal and some context, producing output. Write a migration script. Fix this test. Refactor that function. It runs cheap and fast, and that's the whole point.
 
-**The Verifier** — Here's where most teams get it wrong. The verifier is not the model checking itself. The verifier is the set of criteria you define to judge whether the generator's output is actually good. It might be:
+The Verifier is where most teams get it wrong. It's not the model checking its own homework. It's a set of criteria you define ahead of time to judge whether the generator's output is actually good: do the tests pass, does the output match the TypeScript types, does the screenshot diff match the Figma reference, does it follow the style guide, is it within token limits. The verifier decides whether to ship, retry, iterate, or hand it to a human.
 
-- Do the tests pass?
-- Does the output match the TypeScript types?
-- Does the screenshot diff match the Figma reference?
-- Does the code follow the style guide?
-- Is the generated content within token limits?
+Here's the part that caught people off guard: because the generator is cheap and can run over and over, the verifier ends up being the actual bottleneck. You can spin up a hundred agent runs for less than one senior engineer's salary. You can't spin up a hundred verifiers. They still have to be automated checks or human judgment, and neither of those scales the way compute does.
 
-The verifier is what decides: *ship this, retry, iterate, or escalate to a human.*
+The Stop Condition decides when the loop is done. In theory, when the verifier says "good enough." But that has to be defined in advance. Tests pass? Tests pass and some metric clears a threshold? The human reviewer hasn't pushed back in two hours? Without a real stop condition, you get agents that spin forever, or that quit too early.
 
-And here's the counterintuitive insight that took everyone by surprise: because the generator is cheap and can run many times over, **the verifier becomes the actual bottleneck**. You can spin up a hundred agent runs in the cost of one senior engineer's salary. But you can't spin up a hundred verifiers — they have to be either automated checks or human judgment.
+## Ng's three nested loops
 
-**The Stop Condition** — When does the loop actually finish? When the verifier says "good enough." But "good enough" has to be defined in advance. Is it "tests pass"? Is it "tests pass AND this metric is above threshold"? Is it "the human reviewer hasn't pushed back in 2 hours"? The stop condition is critical because without it, you have runaway agents spinning forever or giving up too early.
+The most useful way to think about this as a product person comes from Andrew Ng's framing in his June 30 essay. He describes three loops running at different speeds.
 
-## Ng's Mental Model: Three Nested Loops
+The Agentic Coding Loop, seconds to minutes, is the innermost cycle: an agent gets a spec, writes code, tests it, and iterates until the verifier signs off. This is the new "build" phase, and it's fast.
 
-If you want the most useful way to think about this as a product person, use Andrew Ng's framing from his June 30 essay. He describes three loops operating at different speeds:
+The Developer Feedback Loop, minutes to hours, sits one ring out. A human engineer looks at what the agent produced, maybe adjusts the spec based on what they just learned, and sends it back in. This is where judgment lives. The machine can verify correctness, but someone still has to verify intent.
 
-The **Agentic Coding Loop** (seconds to minutes) is the innermost cycle. An AI agent gets a spec, writes code, tests it, iterates on it until the verifier says it's good. This is the new "build" phase, and it's fast.
+The External Feedback Loop, hours to weeks, is the slowest ring. Real users interact with the code. A/B tests run. Metrics come in. Bugs show up in the wild. This feeds back down into the original spec, which feeds the developer loop, which feeds the agent loop.
 
-The **Developer Feedback Loop** (minutes to hours) is the middle ring. A human engineer looks at what the agent produced, maybe tweaks the spec based on what they learned, and sends it back. This is where judgment happens — the machine can verify correctness, but a human has to verify intent.
+The key thing Ng points at: faster loops don't replace slower ones. They stack on top of them. A fast agentic loop is only as good as the spec feeding it, and that spec is only as good as the external signal informing it.
 
-The **External Feedback Loop** (hours to weeks) is the slowest, outermost loop. Real users interact with the code. A/B tests run. Metrics come in. Bugs surface in the wild. This loop feeds back down to update the original spec, which then gets fed to the developer loop, which feeds down to the agent loop.
+That's a PM's job, basically drawn as a diagram.
 
-The key insight: faster loops don't replace slower loops. They layer on top of them. A fast agentic loop is only as good as the spec it's given, which is only as good as the external feedback informing it.
+## How this changes the product lifecycle
 
-This is a PM's job, visualized.
+Specs stop being documentation and start being load-bearing. Right now, a PRD gets read by humans who fill in the gaps with judgment. A vague line gets caught in standup, someone asks a clarifying question, the spec evolves in conversation. In a loop-driven world, the spec is also the verifier's rulebook. It's the machine-checkable line between what you meant and what got built.
 
-## How This Transforms the Product Development Lifecycle
+A vague requirement in the old workflow costs you a Slack thread and maybe a day of rework. A vague requirement in a loop's spec costs you a night of wasted compute, a stack of confidently wrong pull requests, and a morning spent figuring out what the agent decided to do at 3 a.m. when it guessed wrong.
 
-### Discovery and Specification Becomes Load-Bearing
+That doesn't mean specs get longer. It means they get more precise. "Improve the checkout flow" now has to look more like:
 
-Right now, a PRD is documentation. It's read by humans, who interpret it with judgment and experience. A vague requirement gets caught in a standup or a Slack thread. Someone asks a clarifying question. The spec evolves.
+- Checkout completes in under 3 seconds on a 4G connection
+- Tax calculation matches the accounting system within $0.01
+- The A/B test needs to show at least a 2% conversion lift before it ships
+- The agent doesn't touch the payment processing layer
 
-In a loop-driven world, your spec is also the verifier's rulebook. It's the machine-checkable boundary between "this is what I'm supposed to build" and "this is what I actually built."
+Ambiguity used to be a communication problem. Now it's a verification problem.
 
-A vague requirement in an old workflow costs you a thread and maybe a day of rework. A vague requirement in a loop's spec costs you a night of wasted compute, a pile of confidently-wrong pull requests, and a morning of untangling what the agent decided to do at 3 AM when it misinterpreted your ambiguous instruction.
+QA moves upstream instead of downstream. Traditionally, code gets written first and QA tests it after. Loops invert that. Acceptance criteria and quality standards have to exist before the loop even runs, because the verifier needs to know what "good" looks like before it can judge anything. QA people don't disappear. Their job shifts from catching bugs after the fact to defining "no bugs" precisely enough that a verifier can actually check for it.
 
-This doesn't mean specs get longer. It means they get *more precise*. A spec that used to say "improve the checkout flow" now needs to say something like:
+Build phases compress, and review shifts shape. Cherny's own story makes the point: one sentence typed, forty agents spin up, three PRs are waiting by the time he's back with coffee. That's not a flourish, it's becoming normal. A feature that used to take an engineer two days can now be generated, tested, and queued for review in minutes.
 
-- The checkout must complete in under 3 seconds on a 4G connection
-- Tax calculation must match our accounting system within $0.01
-- A/B test shows the new version must improve conversion by at least 2% to ship
-- The agent should not modify the payment processing layer
+What doesn't compress is deciding whether it's right. Code review doesn't go away, it changes shape. Instead of reading one PR line by line, you're auditing batches of AI-generated code, figuring out why the loop made the choices it made, and checking whether its idea of "done" actually matches the product vision. In some ways this is harder. You're not just reviewing code anymore, you're reviewing the spec that generated the code. The question shifts from "did the agent do what we asked" to "did we ask for the right thing."
 
-Ambiguity is no longer just a communication problem. It's a verification problem.
+Release cycles get faster but noisier. Faster build cycles only help if the external feedback loop is actually working. Without real user signal coming back down, you're just iterating faster toward a locally optimal wrong answer. The slow outer loop, real users, real usage, real problems, is what keeps the fast inner loops honest.
 
-### QA Moves Upstream, Not Downstream
+## How each role changes
 
-Traditionally, QA happens after the build. Code is written, and then quality assurance teams test it. In a loop-driven world, this inverts.
+Engineers move from writing code to writing and maintaining loops. The job starts to look like: define the spec precisely enough for an agent to run with it, write the verifier that judges the output, figure out why the loop failed when it does. Review time doesn't vanish, it turns into batch review of AI-generated PRs, plus the occasional debugging session into why a loop looped 87 times without converging.
 
-Your acceptance criteria, your test cases, your quality standards — all of these have to exist *before* the loop runs, not after. Why? Because the verifier needs to know what "good" looks like before it judges the generator's output.
+Product managers stop being the person who explains the spec and become the person whose spec a machine can actually execute against. Value shifts toward the decisions a verifier can't make: tradeoffs, taste, judgment calls, strategic context. The spec itself becomes a machine-executable artifact, not just something people read.
 
-This doesn't mean QA people disappear. It means QA thinking becomes front-loaded into the product specification process. A QA engineer's job transforms from "catch bugs after they're built" to "define what 'no bugs' means precisely enough that a verifier can check for it."
+Designers need their mockups to be legible to verifiers too. A screenshot diff against a Figma reference becomes a real verification mechanism, not a nice-to-have. Design specs stop being "here's what it should look like" and start being "here's how we'll know if you built it right."
 
-### Build Phases Compress, Review Phases Shift
+QA engineers probably get the biggest upgrade. Their test suites and acceptance criteria stop being a gate that work passes through on the way out and become the actual mechanism that governs the agent while it's still working.
 
-The Cherny story is illustrative: "One sentence typed, forty agents spin up, three PRs waiting by the time I'm back with coffee."
+Engineering managers pick up a new budgeting headache: agent-hours and token spend, not just headcount and calendar time. Uber's cautionary tale is worth knowing here. They capped individual engineers at $1,500 a month in AI tool spend after blowing through their entire annual budget in four months.
 
-That's not hyperbole — that's becoming the baseline. A feature that might have taken an engineer two days to build can now be generated, tested, and put up for review in minutes.
+Product leadership needs new judgment about what's safe to automate and what needs a human gate. Adding a database column? Probably fine, with the right verifier. Charging a customer? No. That's an irreversible action, and it needs a person signing off.
 
-But here's what doesn't compress: deciding whether it's *right*. Code review doesn't go away. It changes shape. Instead of reviewing a single PR line by line, you're auditing batches of AI-generated code, understanding why certain choices were made, and deciding whether the loop's definition of "done" actually matches the product vision.
+## The risks nobody's saying loudly enough
 
-In some ways, this is harder review work. You're reviewing not just code, but the specification that generated the code. You're asking: "Did we ask the agent for the right thing?" Not just "Did the agent do what we asked?"
+A few honest caveats. This is proven mostly in code, migrations, test suites, PR review, refactoring. There's no mature playbook yet for marketing copy, design iteration, or other creative work, and it's not obvious the framework even transfers.
 
-### Release Cycles Become Continuous but Noisier
+Cost blowouts are real. A poorly constrained loop burns compute fast, and teams are already reporting engineers accidentally torching a month's budget in days without iteration caps in place.
 
-With faster build cycles, you can ship more often. But that speed only makes sense if your external feedback loop is functioning. Without real user signal feeding back down, you're just iterating faster toward a locally-optimal wrong answer.
+The skeptic's case is fair, too. A lot of what people call a "loop" is a cron job, an LLM call, and a try/catch block. The hard part was never the loop mechanism, it's designing a verifier that actually knows what "done" means, and the guardrails around it.
 
-The external feedback loop — real users, real usage data, real problems — becomes the discipline that prevents the fast inner loops from optimizing themselves into irrelevance.
+And emergent behavior is hard to predict. A loop chasing a specified goal will find edge cases you didn't think of. Sometimes that's a clever solution. Sometimes it's an agent taking a technically valid but strategically wrong path, and you don't find out until later.
 
-## How Every Role Transforms
+## What this means if you're a PM
 
-**Engineers** shift from writing code to writing and maintaining loops. A mid-level engineer's job might become: "Define the spec precisely enough that an agent can handle it. Write the verifier that judges the output. Monitor why this loop fails when it does." Code review time doesn't disappear; it becomes batch review of AI-generated PRs plus occasional debugging of why a loop looped 87 times without converging.
+Your spec is now closer to your product's constitution than its documentation. Ambiguity isn't just a communication problem, it's a verification problem, and the muscle of writing clear, unambiguous specs is probably the highest-leverage skill in this environment right now.
 
-**Product Managers** move from being "the person who explains the spec" to "the person whose spec a machine can execute against." Your value shifts toward decisions a verifier can't make — tradeoffs, taste, judgment calls, strategic context. The thing you make — the spec — becomes a machine-executable artifact, not just a human-readable document.
+QA thinking has to move upstream. Define what "good" means before you build, not after.
 
-**Designers** find their mockups and specifications need to be legible to verifiers too. A screenshot diff check against a Figma reference becomes a real verification mechanism. Design specs aren't just "here's what it should look like"; they're "here's how we'll know if you built it right."
+Feedback loops matter more than raw velocity. A fast inner loop is only useful if the slow outer loop is feeding it real signal. Speed without feedback is just iterating toward the wrong answer, faster.
 
-**QA Engineers** arguably get upgraded most dramatically. Their artifacts — test suites, acceptance criteria, quality standards — become the actual control mechanism over the loop. Instead of being a gate that testing passes through, QA becomes the system that governs the agent.
+Judgment is the actual competitive advantage. Machines can verify correctness. Humans decide intent, tradeoffs, strategy. The PM's job isn't just "make the spec clear" anymore, it's "make the spec clear and make sure it captures what the user actually needs."
 
-**Engineering Managers and Team Leads** get a new budgeting problem. It's no longer just about headcount and calendar availability. It's about agent-hours and token spend. Uber's cautionary tale — they capped individual engineers at $1,500 per month in AI tool spend after blowing their entire annual budget in four months — shows this is a real operational challenge.
+## Looking ahead
 
-**Product Leadership** needs new judgment about which parts of the system are safe to automate and which need human gates. Can the agent add a database column? Probably, with the right verifier. Can it charge a customer? Absolutely not — that's an irreversible action that needs a human sign-off.
+We're early. Cherny's line about writing loops instead of prompts is going to ripple through how software gets built for a while yet. The product lifecycle isn't going away, it's just growing new layers.
 
-## The Real Risks No One's Talking Enough About
+Teams that get good at writing tight specs, defining real verifiers, and building fast feedback loops will ship faster and with more confidence. Teams that don't will spend their time fighting runaway agents, burning compute, and shipping the wrong thing very quickly.
 
-Not everything about this is upside. A few honest caveats:
+The future of product development isn't better prompts. It's better systems of judgment.
 
-**It's Only Proven in Code.** Loop engineering works really well for software development — migrations, test suites, PR reviews, refactoring. There's no mature playbook yet for product content, marketing copy, design iteration, or other creative domains. The frameworks might not transfer.
-
-**Cost Blowouts Are Real.** A poorly constrained loop can waste enormous amounts of compute. Without iteration caps and spend limits, teams are already reporting engineers accidentally burning through monthly budgets in days.
-
-**The Skeptic's Case Is Fair.** A lot of what people call a "loop" is just a cron job, an LLM call, and a try/catch block. The genuinely hard part is designing a verifier that actually knows what "done" means, and the guardrails around it. The loop mechanism itself is almost boring.
-
-**Emergent Behavior Is Hard to Predict.** A loop optimizing toward a specified goal will find edge cases and interpretations you didn't anticipate. Sometimes that's good (clever solutions). Sometimes it's expensive (the agent took a technically valid but strategically wrong path).
-
-## What This Means for You as a PM
-
-If you're building a product, shipping code, or making decisions about resource allocation, here's what actually matters:
-
-**Your specification is now your product's constitution.** Ambiguity isn't just a communication problem anymore. It's a verification problem. The muscle you build writing clear, unambiguous specs is the highest-leverage skill in this environment.
-
-**QA thinking moves upstream.** Define what "good" means before you build it, not after.
-
-**Feedback loops matter more than velocity.** Fast inner loops only work if slow outer loops are giving good signal. Speed without feedback is just iteration toward wrong answers, faster.
-
-**Judgment is your competitive advantage.** Machines can verify correctness. Humans decide intent, tradeoffs, and strategy. The PM's job shifts from "make sure the spec is clear" to "make sure the spec is clear AND captures what the user actually needs."
-
-## Looking Ahead
-
-We're still in the early innings. Boris Cherny's observation about writing loops instead of prompts is going to ripple through how we build software for years. The product lifecycle won't disappear — it'll just have new layers.
-
-Teams that figure out how to write tight specifications, define good verifiers, and build fast feedback loops will ship faster and more confidently. Teams that don't will find themselves battling runaway agents, wasting compute, and shipping the wrong thing very quickly.
-
-The future of product development isn't "write better prompts." It's "design better systems of judgment."
-
-And that's a PM skill.
+That's a PM skill.
