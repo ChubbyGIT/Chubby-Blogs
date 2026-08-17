@@ -8,7 +8,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Chubby Blogs | Abhigyan',
   description:
-    'Notes on AI, product, and music — as I build things. Personal blog by Abhigyan.',
+    'A collection of things worth thinking about. Personal blog by Abhigyan.',
 }
 
 export default function HomePage() {
@@ -23,7 +23,7 @@ export default function HomePage() {
         <section className={`${styles.heroSection} container`}>
           <h1 className={styles.heroTitle}>Chubby&nbsp;Blogs</h1>
           <p className={styles.heroTagline}>
-            Notes on AI, product, and music — as I build things.
+            A collection of things worth thinking about.
           </p>
         </section>
 
@@ -66,16 +66,22 @@ export default function HomePage() {
             <div className={styles.aboutText}>
               <p className={styles.aboutLabel}>The Author</p>
               <p className={styles.aboutBody}>
-                I&apos;m <span className={styles.highlight}>Abhigyan</span>. I work in product, build things with AI, and spend an unreasonable amount of time thinking about how technology changes the way we create.
+                I&apos;m <span className={styles.highlight}>Abhigyan</span>. I&apos;m an artist, and <span className={styles.highlight}>Chubby Blogs</span> is where I collect the things that make me stop and think.
               </p>
               <p className={styles.aboutBody}>
-                My day job has me working on enterprise software and low code platforms. Outside of that, I like taking ideas apart, figuring out how they work, and building my own versions of them. I&apos;m particularly interested in AI, product development, developer tools, and the strange space where software starts becoming capable of building software itself.
+                This isn&apos;t a blog about one particular field, industry, or obsession. It&apos;s a place for ideas worth following.
               </p>
               <p className={styles.aboutBody}>
-                I also make music as <span className={styles.highlight}>ChubbyRiffs</span>. Guitar, production, songwriting, and a healthy obsession with heavy music have been a big part of my life for years.
+                Technology, science, design, music, culture, products, strange experiments, new ways of working, things being built, things being broken, and the occasional rabbit hole that turns out to be far more interesting than expected.
               </p>
               <p className={styles.aboutBody}>
-                <span className={styles.highlight}>Chubby Blogs</span> is where all of that ends up. I write about things I&apos;m learning, things I&apos;m building, ideas I find interesting, and occasionally things I probably spent far too much time thinking about.
+                The internet produces something new every day. Most of it disappears into the noise. This is my attempt to catch a few things before they do.
+              </p>
+              <p className={styles.aboutBody}>
+                I write about things I find interesting, things I&apos;m learning, things I want to understand better, and ideas that make me look at the world a little differently.
+              </p>
+              <p className={styles.aboutBody}>
+                <span className={styles.highlight}>Chubby Blogs</span> is essentially a collection of curiosities. No particular niche. No grand thesis. Just interesting things, explored properly.
               </p>
             </div>
           </div>
@@ -95,10 +101,7 @@ export default function HomePage() {
                 <span className={styles.highlight}>Abhigyan Das</span>
               </p>
               <p className={styles.aboutBody} style={{ marginTop: '0.5rem' }}>
-                📧 <a href="mailto:abhigyansdas1234@gmail.com" style={{ color: 'inherit' }}>abhigyansdas1234@gmail.com</a>
-              </p>
-              <p className={styles.aboutBody}>
-                📞 <a href="tel:9880987891" style={{ color: 'inherit' }}>9880987891</a>
+                <a href="https://www.linkedin.com/in/abhigyan-satya-das-4903a5260/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>LinkedIn</a>
               </p>
             </div>
           </div>

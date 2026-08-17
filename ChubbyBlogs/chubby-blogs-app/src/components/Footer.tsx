@@ -13,8 +13,8 @@ export default function Footer() {
 
         {/* Right: links */}
         <div className={styles.links}>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={styles.link}>
-            Instagram
+          <a href="https://www.linkedin.com/in/abhigyan-satya-das-4903a5260/" target="_blank" rel="noopener noreferrer" className={styles.link}>
+            LinkedIn
           </a>
         </div>
       </div>
