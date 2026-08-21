@@ -1,7 +1,7 @@
 import { getAllPosts } from '@/lib/posts'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import PostCard from '@/components/PostCard'
+import PostGrid from '@/components/PostGrid'
 import styles from './Home.module.css'
 import type { Metadata } from 'next'
 
@@ -27,33 +27,10 @@ export default function HomePage() {
           </p>
         </section>
 
-        {/* ── Post Grid ───────────────────────────────────── */}
-        <section id="posts" className={`${styles.gridSection} container`}>
-          <div className={styles.grid}>
-            {posts.map((post, i) => (
-              <PostCard key={post.slug} post={post} index={i} />
-            ))}
-
-            {/* Placeholder slots when fewer than 3 posts */}
-            {posts.length < 3 && (
-              <div className={`${styles.placeholderCard} ${styles.placeholderDark}`}>
-                <div className={styles.placeholderInner}>
-                  <span className={styles.placeholderIcon}>+</span>
-                  <p className={styles.placeholderText}>New Draft Incoming</p>
-                </div>
-              </div>
-            )}
-
-            {posts.length < 2 && (
-              <div className={`${styles.placeholderCard} ${styles.placeholderDarker}`}>
-                <div className={styles.placeholderInner}>
-                  <span className={styles.placeholderIcon}>⌛</span>
-                  <p className={styles.placeholderText}>Expansion in Progress</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
+        {/* ── Post Grid (with filters + pagination) ────────── */}
+        <div className="container">
+          <PostGrid posts={posts} />
+        </div>
 
         {/* ── Divider ─────────────────────────────────────── */}
         <div className="container">

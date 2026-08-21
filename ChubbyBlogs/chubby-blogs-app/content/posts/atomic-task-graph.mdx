@@ -1,0 +1,63 @@
+---
+title: "Why Your AI Agent Keeps Forgetting What It Already Figured Out"
+slug: "atomic-task-graph"
+date: "Aug 21, 2026"
+coverImage: "/images/atg-cover.gif"
+excerpt: "Ask an LLM agent to do something with more than a handful of steps, and you'll eventually watch it fall apart in a familiar way. It gets three steps into a plan, hits a snag, and instead of fixing the one thing that broke, it starts second-guessing everything. This isn't a model capability problem. It's an architecture problem."
+category: "AI & Research"
+readTime: "14 min read"
+---
+
+Ask an LLM agent to do something with more than a handful of steps, and you'll eventually watch it fall apart in a familiar way. It gets three steps into a plan, hits a snag, and instead of fixing the one thing that broke, it starts second-guessing everything. Sometimes it just restarts the whole trajectory. The context window fills up with its own reasoning, and a few steps later it's hallucinating an action that has nothing to do with the actual task.
+
+This isn't really a model capability problem. Or at least, it's not only that. It's an architecture problem. Most agent frameworks, ReAct being the obvious example, represent a plan as one long linear trajectory: observe, think, act, observe, think, act. Every step is coupled to everything before it, because everything before it is sitting in the context. There's no structure that says "this part of the plan is independent of that part" or "this step failed because of that earlier decision, not this one." So when something goes wrong, the agent has no way to localize the damage. It just replans, or backtracks, or plows forward and hopes.
+
+A new paper out of South China University of Technology and Tsinghua Shenzhen, called **Atomic Task Graph (ATG)**, goes after this directly. The pitch is pretty simple: stop representing agent plans as text trajectories and start representing them as an actual graph, with explicit dependencies between subtasks. Once you have that structure, a bunch of things that are hard with a linear trajectory become tractable. You can run independent branches in parallel. You can trace an error back to the specific node that caused it. You can repair just that node instead of replanning the entire task.
+
+![From chaotic inference to structured execution — the core idea behind ATG](/images/atg-cover.gif)
+
+## The two ways people have tried to fix this already
+
+Zoom out and most agent control frameworks fall into two camps.
+
+The first is scaling the backbone model. Bigger model, better reasoning, fewer dumb mistakes. It works, mostly, but it's expensive, and it doesn't actually fix the underlying issue. A GPT-4-sized model running ReAct is still running a linear trajectory. It's just smart enough to paper over the cracks more often.
+
+The second is fine-tuning on agent-specific data, whether that's demonstrations, interaction traces, or feedback signals. This one's cheaper at inference time but comes with its own tax: models fine-tuned for one environment tend to generalize badly to a new one. Train an agent to be great at web navigation and it's not obviously going to be great at, say, controlling a simulated household robot.
+
+Prompt-based methods, the ReAct/Reflexion/Tree-of-Thoughts family, are the third option, and they're the most flexible because they're training-free. But the paper's core complaint is that even the ones that introduce trees or graphs mostly use that structure for exploring candidate paths, not for representing the actual dependency structure of the solved task. The executed solution, at the end of the day, still collapses back into one linear textual trajectory. You get some of the exploration benefits of a tree, but none of the execution benefits of a real DAG.
+
+## What ATG actually does
+
+ATG has three pieces, and they build on each other.
+
+**Recursive interface-preserving compilation.** Instead of asking the model to plan the whole task in one shot, ATG starts with a coarse task graph and recursively refines it. Take a node that's too abstract to execute directly, break it into a subgraph, and repeat until every node in the graph is an atomic, directly executable tool call. The "interface-preserving" part matters here: when you expand a node into a subgraph, that subgraph has to consume the same external inputs and produce output compatible with what the parent node promised. That's what keeps the whole thing compositional. You can refine one node without the rest of the graph caring, because from the outside, nothing about that node's contract changed.
+
+There's a nice side effect of doing it this way. Each refinement step only needs to look at the local context around that one node, not the entire growing history of the task. So as the graph gets more detailed, the amount of irrelevant context the model has to wade through when generating an action actually shrinks instead of growing. That's the opposite of what happens in a ReAct-style loop, where the context just keeps accumulating turn after turn until the model starts hallucinating actions that don't belong.
+
+The paper also keeps a full history of every intermediate graph produced during this refinement process. That history isn't just for show. It's the thing that makes precise error tracing possible later.
+
+**Dependency-aware execution.** Once the graph is fully compiled down to atomic nodes, execution just follows the dependency structure. A node runs once all its predecessors are done and its inputs are resolved. If two branches don't depend on each other, they run in parallel. This is where a lot of the efficiency gains come from: the paper reports meaningfully fewer average execution steps than every baseline they tested, including PoG (Plan-over-Graph), which was specifically designed for parallel scheduling.
+
+Before any of this touches the real environment, though, ATG runs what the authors call a "thought experiment." It's a cheap internal simulation that checks the compiled plan for obvious problems: wrong tool choice, a missing intermediate step, a dependency that doesn't actually hold, mismatched interfaces between two connected nodes. Catching this stuff before spending real environment interactions on it is, unsurprisingly, a lot cheaper than catching it after.
+
+**Minimal necessary subgraph repair.** This is the part that actually uses the refinement history. When something fails, whether during the thought experiment or during real execution, ATG doesn't throw out the whole plan. It localizes the failure to the specific node (or small set of nodes) that broke, then walks back through the graph's refinement history to find the lowest common ancestor of those failed nodes. That ancestor defines the boundary of the repair. Everything else in the graph gets frozen, and only the subgraph inside that boundary gets rebuilt.
+
+It's a genuinely different failure mode than what you get from ReAct or Reflexion, where a mistake tends to trigger either a clunky self-correction loop bolted onto the trajectory, or a full replan. ATG's repair scope is bounded by the actual causal structure of the task, not by "how far back do we feel like rewinding."
+
+![Dependency graph execution — each node waits for its predecessors, independent branches run in parallel](/images/atg-grid.gif)
+
+## Does it actually work
+
+The authors test this on three long-horizon interactive benchmarks: ALFWorld (embodied household tasks), WebShop (e-commerce search and purchase decisions), and ScienceWorld (multi-step scientific reasoning). They run it across three open-source 7B–8B backbones (Mistral-7B, Gemma-7B, Llama-3-8B), compared against ReAct, Reflexion, Tree-of-Thoughts, CAMEL, and Plan-over-Graph, plus GPT-3.5 and GPT-4 running ReAct as reference points.
+
+The headline numbers are big. On Mistral-7B, ATG beats ReAct by roughly 49 points on ALFWorld and 48 points on WebShop. Compared against PoG, the strongest baseline in the comparison, ATG still comes out ahead by 32 points on ALFWorld and nearly 39 on WebShop. And this holds across backbones: ATG with Llama-3-8B actually outperforms GPT-4 running ReAct on both ALFWorld and WebShop, which is the kind of result that suggests the control framework, not just raw model scale, is doing real work here.
+
+A few of the secondary numbers are worth dwelling on longer than the headline ones, because they're more diagnostic. The hallucinated-action rate on ALFWorld drops from 42.86% under ReAct to 12.14% under ATG, about a 72% relative reduction. That lines up with the paper's core theoretical claim: localized context reduces hallucination, and ATG's whole design is built around keeping each node's context narrow. Average execution steps also drop substantially across the board, even against PoG, which was already built for parallel execution. And the ablations back up the architecture story rather than just the headline number: pulling out either the pre-execution thought experiment or the subgraph repair mechanism causes a real performance hit on every backbone, with subgraph repair generally mattering more. That's consistent with the paper's framing that these are complementary, not redundant. One improves the plan before execution starts. The other keeps things stable once execution runs into trouble.
+
+## Where this leaves things
+
+The most interesting claim in the paper, at least to me, isn't any single benchmark number. It's the implicit argument that a lot of what looks like an agent-capability problem is actually a representation problem. ReAct and its descendants ask the model to hold the entire structure of a plan implicitly, in a running text trajectory, and infer dependencies from context every single step. ATG just makes those dependencies explicit and lets a much simpler execution engine handle scheduling, parallelism, and error localization instead of asking the LLM to reconstruct all of that from scratch each turn.
+
+That said, the paper is upfront about the limits. ATG still depends entirely on the backbone's decomposition ability. If the model can't correctly break a task into atomic units in the first place, no amount of graph structure downstream fixes that. Failure localization also gets harder under noisy observations or long-range dependencies, where the "smallest affected subgraph" isn't obviously small anymore. And everything here is evaluated on text-based benchmarks. Whether interface-preserving compilation holds up cleanly in multimodal or real-world settings, where inputs and outputs are messier than a clean DAG edge, is an open question. The authors also note plainly that ATG adds overhead on simple tasks, which tracks: building and validating a graph is wasted effort for a task that's basically one step.
+
+Still, for anyone building agents that need to run for a while and recover gracefully when something breaks, the core idea here seems worth stealing even outside the exact framework: track dependencies explicitly, keep node-level context narrow, and repair failures at the scope of the graph structure rather than the scope of "how far back in the trajectory do we feel like going."
