@@ -9,6 +9,7 @@ export interface PostMeta {
   title: string
   date: string
   coverImage: string
+  coverVideo?: string
   excerpt: string
   category: string
   readTime: string
@@ -33,6 +34,7 @@ export function getAllPosts(): PostMeta[] {
         title: data.title || slug,
         date: data.date || '',
         coverImage: data.coverImage || '',
+        coverVideo: data.coverVideo || '',
         excerpt: data.excerpt || '',
         category: data.category || '',
         readTime: data.readTime || '',
@@ -59,6 +61,7 @@ export function getPostBySlug(slug: string): Post | null {
       title: data.title || slug,
       date: data.date || '',
       coverImage: data.coverImage || '',
+      coverVideo: data.coverVideo || '',
       excerpt: data.excerpt || '',
       category: data.category || '',
       readTime: data.readTime || '',

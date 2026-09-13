@@ -33,6 +33,24 @@
     transform 0.7s ease;
 }
 
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.3);
+  transform: scale(1.08);
+  transition:
+    filter 0.7s ease,
+    transform 0.7s ease;
+}
+
+.card:hover .video {
+  filter: grayscale(0);
+  transform: scale(1.04);
+}
+
 .card:hover .image {
   filter: grayscale(0);
   transform: scale(1.04);

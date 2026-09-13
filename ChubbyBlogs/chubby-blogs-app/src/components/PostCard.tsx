@@ -29,8 +29,22 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
     >
       <Link href={`/blog/${post.slug}`} className={styles.cardLink}>
         <div className={styles.card}>
-          {/* Cover image */}
-          {post.coverImage ? (
+          {/* Cover media — prefer MP4 video over GIF/image */}
+          {post.coverVideo ? (
+            <div className={styles.imageWrapper}>
+              <video
+                className={styles.video}
+                src={post.coverVideo}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                aria-hidden="true"
+              />
+              <div className={styles.overlay} />
+            </div>
+          ) : post.coverImage ? (
             <div className={styles.imageWrapper}>
               <Image
                 src={post.coverImage}
