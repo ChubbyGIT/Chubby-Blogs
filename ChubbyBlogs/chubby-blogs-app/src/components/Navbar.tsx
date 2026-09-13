@@ -18,7 +18,6 @@ export default function Navbar() {
         {/* Desktop nav links */}
         <div className={styles.desktopNav}>
           <Link href="/#about" className={styles.navLink}>About</Link>
-          <Link href="/#contact" className={styles.navLink}>Contact</Link>
         </div>
 
         {/* Mobile hamburger */}
@@ -38,7 +37,6 @@ export default function Navbar() {
       {menuOpen && (
         <div className={styles.mobileMenu}>
           <Link href="/#about" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>About</Link>
-          <Link href="/#contact" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Contact</Link>
         </div>
       )}
     </header>

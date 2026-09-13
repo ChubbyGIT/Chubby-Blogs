@@ -8,7 +8,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Chubby Blogs | Abhigyan',
   description:
-    'A collection of things worth thinking about. Personal blog by Abhigyan.',
+    'Things worth knowing. One word at a time. Personal blog by Abhigyan.',
 }
 
 export default function HomePage() {
@@ -23,7 +23,7 @@ export default function HomePage() {
         <section className={`${styles.heroSection} container`}>
           <h1 className={styles.heroTitle}>Chubby&nbsp;Blogs</h1>
           <p className={styles.heroTagline}>
-            A collection of things worth thinking about.
+            Things worth knowing. One word at a time.
           </p>
         </section>
 
@@ -59,26 +59,6 @@ export default function HomePage() {
               </p>
               <p className={styles.aboutBody}>
                 <span className={styles.highlight}>Chubby Blogs</span> is essentially a collection of curiosities. No particular niche. No grand thesis. Just interesting things, explored properly.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Divider ─────────────────────────────────────── */}
-        <div className="container">
-          <hr className={styles.divider} />
-        </div>
-
-        {/* ── Contact ──────────────────────────────────────── */}
-        <section id="contact" className={`${styles.aboutSection} container`}>
-          <div className={styles.aboutGrid}>
-            <div className={styles.aboutText}>
-              <p className={styles.aboutLabel}>Get in Touch</p>
-              <p className={styles.aboutBody}>
-                <span className={styles.highlight}>Abhigyan Das</span>
-              </p>
-              <p className={styles.aboutBody} style={{ marginTop: '0.5rem' }}>
-                <a href="https://www.linkedin.com/in/abhigyan-satya-das-4903a5260/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>LinkedIn</a>
               </p>
             </div>
           </div>

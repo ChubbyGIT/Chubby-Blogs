@@ -7,9 +7,13 @@ export const metadata: Metadata = {
     template: '%s | Chubby Blogs',
   },
   description:
-    'Notes on AI, product, and music — as I build things. By Abhigyan.',
+    'Things worth knowing. One word at a time. By Abhigyan.',
   keywords: ['blog', 'AI', 'product management', 'music', 'ChubbyRiffs', 'engineering'],
   authors: [{ name: 'Abhigyan' }],
+  icons: {
+    icon: '/cb-logo.png',
+    apple: '/cb-logo.png',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
